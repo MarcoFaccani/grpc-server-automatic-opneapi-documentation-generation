@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option java_multiple_files = true;
+option java_package = "com.marcofaccani.grpc.server.v1";
+option java_outer_classname = "MyGrpcServer";
+
+option go_package = "github.com/marcofaccani/com-marcofaccani-grpc-server/clientLibraries/go;com-marcofaccani-grpc-server_v1";
+
+package customer.service;
+
+service GrpcServerService {
+
+  //heath check of microservice
+  rpc GetServerStatus (google.protobuf.Empty) returns (ServerStatusReply) {
+    option (google.api.http) = {
+      get: "/service/customer/status"
+    };
+  }
+
+  rpc Greeting (GreetingRequest) returns (GreetingResponse) {
+    option (google.api.http) = {
+      post: "/service/greeting",
+      body: "*"
+    };
+  }
+
+  rpc Introduce (IntroduceRequest) returns (IntroduceResponse) {
+    option (google.api.http) = {
+      post: "/service/introduce",
+      body: "*"
+    };
+  }
+
+  rpc EdgeCaseEmptyResponse (EdgeCaseEmptyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/service/edge-case-empty",
+      body: "*"
+    };
+  }
+
+}
+
+/* MESSAGES DEFINITIONS */
+message ServerStatusReply {
+  string service = 1;
+  ServerServiceStatus status = 2;
+  string new_field = 3;
+}
+
+message GreetingRequest {
+  string firstname = 1;
+  string lastname = 2;
+}
+
+message GreetingResponse {
+  string message = 1;
+}
+
+message IntroduceRequest {
+  string firstname = 1;
+  string city = 2;
+}
+
+message IntroduceResponse {
+  string reply = 1; // named reply instead of message on purpose
+}
+
+message EdgeCaseEmptyRequest {
+  string firstname = 1;
+}
+
+/* ENUMS DEFINITIONS */
+enum ServerServiceStatus {
+  UP = 0;
+  DOWN = 1;
+}
+
+
+
+

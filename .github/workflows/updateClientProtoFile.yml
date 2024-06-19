@@ -1,0 +1,62 @@
+name: UpdateClientProtoFile
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - '**.proto'
+jobs:
+
+  get-version-and-update:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ""
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.4.2
+      - name: Cache
+        uses: actions/cache@v3.0.4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Install JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+      - name: compile
+        run: mvn clean install -DskipTests
+      - name: get new server's API version
+        run: |
+          cd bom
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "new version is $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Checkout client
+        uses: actions/checkout@v2.4.2
+        with:
+          repository: MarcoFaccani/grpc-client
+          ref: develop
+          token: ${{ secrets.PERSONAL }}
+      - name: update client's server's API's version
+        run: |
+          PROPERTY=grpc-server.version
+          echo "updating version of property $PROPERTY to ${{ env.VERSION }}"
+          mvn versions:set-property -Dproperty=$PROPERTY -DnewVersion=$VERSION -DgenerateBackupPoms=false
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4.0.4
+        with:
+          token: ${{ secrets.PERSONAL }}
+          commit-message: update apis version
+          title: update apis version
+          base: develop
+          branch: update-apis-version
+          delete-branch: true
+
+
+
+
+

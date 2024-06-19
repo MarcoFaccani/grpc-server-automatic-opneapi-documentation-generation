@@ -1,0 +1,12 @@
+server:
+  port: 8081
+
+grpc:
+  server:
+    port: ${grpcServerPort:9091}
+  client:
+    local-grpc-server:
+      address: 'static://127.0.0.1:${grpcServerPort:9999}'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext

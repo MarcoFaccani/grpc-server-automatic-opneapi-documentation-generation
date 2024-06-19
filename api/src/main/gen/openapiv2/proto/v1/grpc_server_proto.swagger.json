@@ -1,0 +1,241 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "proto/v1/grpc_server_proto.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "GrpcServerService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/service/customer/status": {
+      "get": {
+        "summary": "heath check of microservice",
+        "operationId": "GrpcServerService_GetServerStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceServerStatusReply"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "GrpcServerService"
+        ]
+      }
+    },
+    "/service/edge-case-empty": {
+      "post": {
+        "operationId": "GrpcServerService_EdgeCaseEmptyResponse",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/serviceEdgeCaseEmptyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "GrpcServerService"
+        ]
+      }
+    },
+    "/service/greeting": {
+      "post": {
+        "operationId": "GrpcServerService_Greeting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceGreetingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/serviceGreetingRequest"
+            }
+          }
+        ],
+        "tags": [
+          "GrpcServerService"
+        ]
+      }
+    },
+    "/service/introduce": {
+      "post": {
+        "operationId": "GrpcServerService_Introduce",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serviceIntroduceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/serviceIntroduceRequest"
+            }
+          }
+        ],
+        "tags": [
+          "GrpcServerService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "serviceEdgeCaseEmptyRequest": {
+      "type": "object",
+      "properties": {
+        "firstname": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceGreetingRequest": {
+      "type": "object",
+      "properties": {
+        "firstname": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceGreetingResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceIntroduceRequest": {
+      "type": "object",
+      "properties": {
+        "firstname": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        }
+      }
+    },
+    "serviceIntroduceResponse": {
+      "type": "object",
+      "properties": {
+        "reply": {
+          "type": "string",
+          "title": "named reply instead of message on purpose"
+        }
+      }
+    },
+    "serviceServerServiceStatus": {
+      "type": "string",
+      "enum": [
+        "UP",
+        "DOWN"
+      ],
+      "default": "UP",
+      "title": "ENUMS DEFINITIONS"
+    },
+    "serviceServerStatusReply": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/serviceServerServiceStatus"
+        },
+        "new_field": {
+          "type": "string"
+        }
+      },
+      "title": "MESSAGES DEFINITIONS"
+    }
+  }
+}
