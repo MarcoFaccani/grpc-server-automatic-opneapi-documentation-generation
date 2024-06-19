@@ -6,11 +6,21 @@ chmod +x scripts/add_examples_to_openapi.sh
 
 # Path del file generato da buf
 GEN_PATH="api/src/main/gen/openapiv2/proto/v1"
-PROTO_PATH="api/src/main/proto/v1"
-OUTPUT_PATH="api/src/main/gen/openapiv3"
+OPENAPI_FILE_OUTPUT_PATH="api/src/main/gen/openapiv3"
+PROTO_DIRECTORY="api/src/main/proto/v1"
+
+# Find proto file
+proto_path=$(find "$PROTO_DIRECTORY" -type f -name "*.proto" | head -n 1)
+if [ -n "$proto_path" ]; then
+  echo "Proto file found: $proto_path"
+else
+  echo "Error: no .proto found in $directory"
+  exit 1
+fi
+
 
 # Execute kotlin script
-kotlinc-jvm -script scripts/extract_endpoint_info_from_proto.kts api/src/main/proto/v1/grpc_server_proto.proto
+kotlinc-jvm -script scripts/extract_endpoint_info_from_proto.kts $proto_path
 
 # 1. Verifica se esiste un file con estensione .json
 echo "Verifying if older swagger2 documentation exists..."
@@ -60,14 +70,14 @@ if [ -n "$NEW_JSON" ]; then
         exit 1
     fi
 
-    # Crea la directory OUTPUT_PATH se non esiste
-    mkdir -p "$OUTPUT_PATH"
+    # Crea la directory OPENAPI_FILE_OUTPUT_PATH se non esiste
+    mkdir -p "$OPENAPI_FILE_OUTPUT_PATH"
 
     # Sposta il file response.json in api/src/main/gen/openapiv3 e rinominalo in openapi.json
-    echo "Moving response.json to $OUTPUT_PATH/openapi.json..."
-    mv "response.json" "$OUTPUT_PATH/openapi.json"
+    echo "Moving response.json to $OPENAPI_FILE_OUTPUT_PATH/openapi.json"
+    mv "response.json" "$OPENAPI_FILE_OUTPUT_PATH/openapi.json"
     if [ $? -ne 0 ]; then
-        echo "Failed to move response.json to $OUTPUT_PATH/openapi.json. Exiting."
+        echo "Failed to move response.json to $OPENAPI_FILE_OUTPUT_PATH/openapi.json. Exiting."
         exit 1
     fi
 
@@ -76,4 +86,4 @@ else
     exit 1
 fi
 
-echo "Master script executed successfully."
+echo "Master script executed successfully. OpenAPI File generated in $OPENAPI_FILE_OUTPUT_PATH/openapi.json"
