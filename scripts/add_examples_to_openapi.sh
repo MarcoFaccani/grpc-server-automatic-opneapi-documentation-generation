@@ -60,6 +60,14 @@ add_examples_to_given_endpoint() {
   done
 }
 
+# Core Logic Begin
+echo "Adding examples to OpenAPI file..."
+
+# Verifica se la cartella esiste
+if [ ! -d "$BASE_DIR" ]; then
+    echo "Error add_examples_to_openapi: expected folder $BASE_DIR to exist."
+    exit 1
+fi
 
 # Leggi i dati dal file proto-info-extracted.txt
 while IFS=',' read -r method url verb; do
@@ -68,7 +76,7 @@ while IFS=',' read -r method url verb; do
   url=$(echo "$url" | tr -d '[:space:]')
 
   # Debug: Print how the function is being invoked
-  echo "Adding examples for endpoint: $url, method: $verb, base directory: $BASE_DIR/$method"
+echo "  Adding examples for endpoint $method: $(echo $verb | tr '[:lower:]' '[:upper:]') $url. Test base directory: $BASE_DIR/$method"
 
   # Aggiungi esempi per l'endpoint
   add_examples_to_given_endpoint "$url" "$verb" "$BASE_DIR/$method"

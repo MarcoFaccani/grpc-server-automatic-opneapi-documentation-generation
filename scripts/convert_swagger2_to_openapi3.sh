@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Converting from Swagger 2 to OpenAPI 3..."
+
 # Controlla che sia stato fornito un file JSON come argomento
 if [ "$#" -ne 1 ]; then
     echo "convert_swagger2_to_openapi3.sh: argument missing. Please provide a path to a swagger2 JSON file"

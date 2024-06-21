@@ -2,6 +2,7 @@ import java.io.File
 
 data class EndpointInfo(val method: String, val url: String, val verb: String)
 
+println("Executing script extract_endpoint_info_from_proto.kts...")
 
 if (args.isEmpty()) {
   println("Error: missing required argument - please provide the path to a proto file")
@@ -13,8 +14,6 @@ if (args.isEmpty()) {
   if (!protoFile.exists()) {
     println("Error: file not found - please provide a valid path to a proto file")
   } else {
-    println("Processing file: $protoFilePath")
-
     // Extract endpoint information from the proto file
     val endpointInfos = extractEndpointInfoFromProto(protoFile)
 
@@ -31,6 +30,7 @@ fun extractEndpointInfoFromProto(protoFile: File): List<EndpointInfo> {
   val protoLines = protoFile.readLines()
   val endpointInfos = mutableListOf<EndpointInfo>()
   var method: String? = null
+  var numberOfRestEndpointsFound = 0
 
   protoLines.forEachIndexed { index, line ->
     if (line.trim().startsWith("rpc")) {
@@ -42,6 +42,7 @@ fun extractEndpointInfoFromProto(protoFile: File): List<EndpointInfo> {
       }
     } else {
       if (line.contains("option (google.api.http) =")) {
+        numberOfRestEndpointsFound++
         val nextLine = index + 1
         if (nextLine < protoLines.size) {
           val httpLine = protoLines[nextLine].trim()
@@ -61,6 +62,7 @@ fun extractEndpointInfoFromProto(protoFile: File): List<EndpointInfo> {
       }
     }
   }
+  println("  Found $numberOfRestEndpointsFound REST endpoints in proto file")
   return endpointInfos
 }
 
