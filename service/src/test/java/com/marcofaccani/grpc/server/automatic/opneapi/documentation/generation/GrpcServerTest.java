@@ -5,6 +5,8 @@ import com.marcofaccani.grpc.server.automatic.opneapi.documentation.generation.c
 import com.marcofaccani.grpc.server.automatic.opneapi.documentation.generation.library.GrpcRequestJsonExtension;
 import com.marcofaccani.grpc.server.automatic.opneapi.documentation.generation.library.WriteGrpcRequestAndResponseAsJsonToFile;
 import com.marcofaccani.grpc.server.v1.EdgeCaseEmptyRequest;
+import com.marcofaccani.grpc.server.v1.GetUserByIdRequest;
+import com.marcofaccani.grpc.server.v1.GetUserByIdResponse;
 import com.marcofaccani.grpc.server.v1.GreetingRequest;
 import com.marcofaccani.grpc.server.v1.GreetingResponse;
 import com.marcofaccani.grpc.server.v1.IntroduceRequest;
@@ -139,6 +141,27 @@ class GrpcServerTest {
       verify(streamObserver).onCompleted();
     }
 
+  }
+
+  @Nested
+  class GetUserById {
+
+    GetUserByIdRequest grpcRequest;
+    GetUserByIdResponse grpcResponse;
+
+    @Mock
+    StreamObserver<GetUserByIdResponse> streamObserver;
+
+    @Test
+    @WriteGrpcRequestAndResponseAsJsonToFile
+    void getMarco() {
+      grpcRequest = GetUserByIdRequest.newBuilder().setId("12345").build();
+      assertDoesNotThrow(() -> underTest.getUserById(grpcRequest, streamObserver));
+
+      grpcResponse = GetUserByIdResponse.newBuilder().setFirstname("Marco").setLastname("Rossi").build();
+      verify(streamObserver).onNext(grpcResponse);
+      verify(streamObserver).onCompleted();
+    }
   }
 }
 

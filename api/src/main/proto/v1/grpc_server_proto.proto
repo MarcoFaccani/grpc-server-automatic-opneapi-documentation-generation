@@ -41,6 +41,12 @@ service GrpcServerService {
     };
   }
 
+  rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdResponse) {
+    option (google.api.http) = {
+      get: "/users/{id}"
+    };
+  }
+
 }
 
 /* MESSAGES DEFINITIONS */
@@ -70,6 +76,15 @@ message IntroduceResponse {
 
 message EdgeCaseEmptyRequest {
   string firstname = 1;
+}
+
+message GetUserByIdRequest {
+  string id = 1;
+}
+
+message GetUserByIdResponse {
+  string firstname = 1;
+  string lastname = 2;
 }
 
 /* ENUMS DEFINITIONS */
