@@ -4,5 +4,5 @@ managed:
 plugins:
   - plugin: buf.build/grpc-ecosystem/openapiv2:v2.20.0
     out: gen/openapiv2
-    opt: json_names_for_fields=false
+    opt: json_names_for_fields=false,allow_merge=true
 #    opt: allow_merge=true,merge_file_name=services
