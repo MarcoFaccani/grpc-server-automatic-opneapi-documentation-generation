@@ -1,0 +1,36 @@
+name: Build & Upload test-json on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Effettua il checkout del codice sorgente
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Installa JDK (Java 21 per Maven/Spring)
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # Installa l'ultima versione di Kotlin
+      - name: Set up Kotlin (latest)
+        uses: fwilhe2/setup-kotlin@main
+
+      # Esegue la build con Maven
+      - name: Maven Clean Install
+        run: mvn clean install
+
+      # Carica la cartella test-json come GitHub artifact
+      - name: Upload test-json directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-json-artifact
+          path: service/target/test-json
