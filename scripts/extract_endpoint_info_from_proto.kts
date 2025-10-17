@@ -1,4 +1,5 @@
 import java.io.File
+import java.io.FileWriter
 
 data class EndpointInfo(val method: String, val url: String, val verb: String)
 
@@ -19,9 +20,9 @@ if (args.isEmpty()) {
 
     // Write endpointInfos to a file
     val outputFilePath = "proto-info-extracted.txt"
-    writeEndpointInfosToFile(endpointInfos, outputFilePath)
+    appendEndpointInfosToFile(endpointInfos, outputFilePath)
 
-    println("Successfully wrote endpoint information to $outputFilePath")
+    println("Successfully appended endpoint information to $outputFilePath")
   }
 }
 
@@ -81,14 +82,14 @@ fun extractUrl(line: String): String? {
   return extractedUrl
 }
 
-fun writeEndpointInfosToFile(endpointInfos: List<EndpointInfo>, outputFilePath: String) {
+fun appendEndpointInfosToFile(endpointInfos: List<EndpointInfo>, outputFilePath: String) {
   try {
-    File(outputFilePath).printWriter().use { writer ->
+    FileWriter(outputFilePath, true).use { writer ->
       endpointInfos.forEach { info ->
-        writer.println("${info.method},${info.url},${info.verb}")
+        writer.write("${info.method},${info.url},${info.verb}\n")
       }
     }
   } catch (e: Exception) {
-    println("Error writing to file: ${e.message}")
+    println("Error appending to file: ${e.message}")
   }
 }

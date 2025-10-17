@@ -1,14 +1,7 @@
 package com.marcofaccani.grpc.server.automatic.opneapi.documentation.generation.channel;
 
 import com.google.protobuf.Empty;
-import com.marcofaccani.grpc.server.v1.EdgeCaseEmptyRequest;
-import com.marcofaccani.grpc.server.v1.GreetingRequest;
-import com.marcofaccani.grpc.server.v1.GreetingResponse;
-import com.marcofaccani.grpc.server.v1.GrpcServerServiceGrpc;
-import com.marcofaccani.grpc.server.v1.IntroduceRequest;
-import com.marcofaccani.grpc.server.v1.IntroduceResponse;
-import com.marcofaccani.grpc.server.v1.ServerServiceStatus;
-import com.marcofaccani.grpc.server.v1.ServerStatusReply;
+import com.marcofaccani.grpc.server.v1.*;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 
@@ -49,6 +42,16 @@ public class GrpcServer extends GrpcServerServiceGrpc.GrpcServerServiceImplBase 
   @Override
   public void edgeCaseEmptyResponse(EdgeCaseEmptyRequest request, StreamObserver<Empty> streamObserver) {
     streamObserver.onNext(Empty.getDefaultInstance());
+    streamObserver.onCompleted();
+  }
+
+  @Override
+  public void getUserById(GetUserByIdRequest request, StreamObserver<GetUserByIdResponse> streamObserver) {
+    final var response = GetUserByIdResponse.newBuilder()
+        .setFirstname("Marco")
+        .setLastname("Rossi")
+        .build();
+    streamObserver.onNext(response);
     streamObserver.onCompleted();
   }
 

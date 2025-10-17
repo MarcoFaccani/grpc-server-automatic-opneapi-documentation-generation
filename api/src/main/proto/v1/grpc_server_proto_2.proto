@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option java_multiple_files = true;
+option java_package = "com.marcofaccani.grpc.server.v1";
+option java_outer_classname = "MyGrpcServerTranslator";
+
+option go_package = "github.com/marcofaccani/com-marcofaccani-grpc-server/clientLibraries/go;com-marcofaccani-grpc-server_v1";
+
+package user.service;
+
+service GrpcServerServiceTwo {
+
+  rpc Translate (TranslateRequest) returns (TranslateResponse) {
+    option (google.api.http) = {
+      post: "/translate",
+      body: "*"
+    };
+  }
+
+}
+
+message TranslateRequest {
+  string message = 1;
+}
+
+message TranslateResponse {
+  string message = 1;
+}
