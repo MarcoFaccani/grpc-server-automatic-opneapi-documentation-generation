@@ -3,7 +3,7 @@ server:
 
 grpc:
   server:
-    port: ${grpcServerPort:9091}
+    port: ${grpcServerPort:9099}
   client:
     local-grpc-server:
       address: 'static://127.0.0.1:${grpcServerPort:9999}'

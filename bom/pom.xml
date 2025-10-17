@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.6.7</version>
+    <version>3.3.9</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
@@ -19,19 +19,24 @@
 
   <properties>
     <argLine>-Duser.language=en</argLine>
-
-    <java.version>11</java.version>
-    <spring.boot.version>2.6.7</spring.boot.version>
-    <grpc.protos.version>2.7.1</grpc.protos.version>
-    <io.grpc.version>1.45.0</io.grpc.version>
-    <common.protos.version>2.7.1</common.protos.version>
-    <grpc-spring-boot-starter.version>2.13.1.RELEASE</grpc-spring-boot-starter.version>
+    <java.version>21</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <grpc-server.version>1.0.0-SNAPSHOT</grpc-server.version>
 
+    <spring-boot-starter-parent.version>3.3.9</spring-boot-starter-parent.version>
+
+    <!-- grpc & Proto -->
+    <net.devh.version>3.1.0.RELEASE</net.devh.version>
+    <com.google.protobuf.version>3.25.5</com.google.protobuf.version> <!-- version used by Spring gRPC plugin (net.devh v3.1.0.RELEASE) -->
+    <io.grpc.version>1.67.1</io.grpc.version> <!-- version used by Spring gRPC plugin (net.devh v3.1.0.RELEASE) -->
+    <com.google.api.grpc.version>2.48.0</com.google.api.grpc.version> <!-- highest version that uses 3.25.5 of protobuf-java -->
+    <build.buf.protovalidate.version>0.2.1</build.buf.protovalidate.version> <!-- highest version that uses 3.25.5 of protobuf-java -->
+    <pgv-java-stub.version>1.1.0</pgv-java-stub.version>
+
     <!-- Plugins -->
     <os-maven-plugin.version>1.7.0</os-maven-plugin.version>
-    <maven-compiler-plugin.version>3.6.2</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version> <!-- 3.14.1 -->
     <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
     <protoc-gen-grpc-java.version>1.41.0</protoc-gen-grpc-java.version>
     <com.google.protobuf.protoc.version>3.17.3</com.google.protobuf.protoc.version>
@@ -45,12 +50,12 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
-        <version>${spring.boot.version}</version>
+        <version>${spring-boot-starter-parent.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-test</artifactId>
-        <version>${spring.boot.version}</version>
+        <version>${spring-boot-starter-parent.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -68,19 +73,24 @@
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>grpc-google-common-protos</artifactId>
-        <version>${common.protos.version}</version>
+        <version>${com.google.api.grpc.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.api.grpc</groupId>
         <artifactId>proto-google-common-protos</artifactId>
-        <version>${common.protos.version}</version>
+        <version>${com.google.api.grpc.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>build.buf.protoc-gen-validate</groupId>
+        <artifactId>pgv-java-stub</artifactId>
+        <version>${pgv-java-stub.version}</version>
       </dependency>
 
       <!-- GRPC Service -->
       <dependency>
         <groupId>net.devh</groupId>
         <artifactId>grpc-spring-boot-starter</artifactId>
-        <version>${grpc-spring-boot-starter.version}</version>
+        <version>${net.devh.version}</version>
       </dependency>
 
       <!-- APIs -->
@@ -95,15 +105,8 @@
       <dependency>
         <groupId>com.hubspot.jackson</groupId>
         <artifactId>jackson-datatype-protobuf</artifactId>
-        <version>0.9.15</version>
+        <version>0.9.17</version>
       </dependency>
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>1.18.24</version>
-        <scope>provided</scope>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
 
@@ -123,34 +126,9 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
           <configuration>
-            <release>${java.version}</release>
+            <source>1.8</source>
+            <target>1.8</target>
           </configuration>
-        </plugin>
-
-        <plugin>
-          <groupId>org.xolstice.maven.plugins</groupId>
-          <artifactId>protobuf-maven-plugin</artifactId>
-          <version>${protobuf-maven-plugin.version}</version>
-          <configuration>
-            <pluginId>grpc-java</pluginId>
-            <pluginArtifact>
-              io.grpc:protoc-gen-grpc-java:${protoc-gen-grpc-java.version}:exe:${os.detected.classifier}
-            </pluginArtifact>
-            <protocArtifact>
-              com.google.protobuf:protoc:${com.google.protobuf.protoc.version}:exe:${os.detected.classifier}
-            </protocArtifact>
-            <attachDescriptorSet>true</attachDescriptorSet>
-            <includeDependenciesInDescriptorSet>true</includeDependenciesInDescriptorSet>
-            <writeDescriptorSet>${writeDescriptorSetBool}</writeDescriptorSet>
-          </configuration>
-          <executions>
-            <execution>
-              <goals>
-                <goal>compile</goal>
-                <goal>compile-custom</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
 
         <plugin>
@@ -165,7 +143,6 @@
             </excludes>
           </configuration>
         </plugin>
-
       </plugins>
     </pluginManagement>
 
