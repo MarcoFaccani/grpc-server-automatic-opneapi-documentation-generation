@@ -5,22 +5,40 @@ chmod +x scripts/convert_swagger2_to_openapi3.sh
 chmod +x scripts/add_examples_to_openapi.sh
 
 # Path del file generato da buf
-GEN_PATH="api/src/main/gen/openapiv2/proto/v1"
+GEN_PATH="api/src/main/gen/openapiv2"
 OPENAPI_FILE_OUTPUT_PATH="api/src/main/gen/openapiv3"
 PROTO_DIRECTORY="api/src/main/proto/v1"
 
-# Find proto file
-proto_path=$(find "$PROTO_DIRECTORY" -type f -name "*.proto" | head -n 1)
-if [ -n "$proto_path" ]; then
-  echo "Proto file found: $proto_path"
+# Find proto files
+proto_files=($(find "$PROTO_DIRECTORY" -type f -name "*.proto"))
+
+# Log array dimension and proto files names
+if [ ${#proto_files[@]} -gt 0 ]; then
+  echo "Proto files found: ${#proto_files[@]}"
+  for proto_path in "${proto_files[@]}";
+    do
+        echo "  Proto file found: $proto_path"
+    done
 else
-  echo "Error: no .proto found in $directory"
+  echo "Error: no .proto files found in $PROTO_DIRECTORY"
   exit 1
 fi
 
 
+# Delete pre-existing file if exists (in case you run this script twice locally)
+PROTO_INFO_EXTRACTED_FILE_NAME="proto-info-extracted.txt"
+if [ -f "$PROTO_INFO_EXTRACTED_FILE_NAME" ]; then
+    echo "File '$PROTO_INFO_EXTRACTED_FILE_NAME' already exists. Proceeding with deletion..."
+    rm "$PROTO_INFO_EXTRACTED_FILE_NAME"
+    echo "File deleted successfully."
+fi
+
 # Execute kotlin script
-kotlinc-jvm -script scripts/extract_endpoint_info_from_proto.kts $proto_path
+for proto_path in "${proto_files[@]}";
+  do
+      echo "Executing script extract_endpoint_info_from_proto.kts for proto file $proto_path"
+      kotlinc-jvm -script scripts/extract_endpoint_info_from_proto.kts "$proto_path"
+  done
 
 # 1. Verifica se esiste un file con estensione .json
 echo "Verifying if older swagger2 documentation exists..."

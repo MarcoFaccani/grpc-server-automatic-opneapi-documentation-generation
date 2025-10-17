@@ -12,6 +12,12 @@ these scripts does the following:
 4. Add to the OpenAPI3 file created in step #2 request and response samples, taking them from the GrpcServer unit test
    class. This is obtained through a small library (more on this later).
 
+## Running the code/scripts
+1. You must have kotlin installed on your machine (it's required to call a kotlin script from a bash script)
+2. Run `mvn clean install` in the root of the project
+3. Run the script `./scripts/master_script.sh`. The script <span style="color:red; font-weight:bold;">MUST BE</span> called from the project root.
+> Requires Java 21
+
 ## The gRPC Endpoints
 
 This repository contains a basic gRPC server with four endpoints: `GetServerStatus`,`Greeting`, `Introduce`
