@@ -35,6 +35,7 @@ fun extractEndpointInfoFromProto(protoFile: File): List<EndpointInfo> {
 
   protoLines.forEachIndexed { index, line ->
     if (line.trim().startsWith("rpc")) {
+      // Extract RPC Method Name
       val parts = line.split(" ")
       if (parts.size > 1) {
         method = parts[3]
@@ -42,29 +43,33 @@ fun extractEndpointInfoFromProto(protoFile: File): List<EndpointInfo> {
         println("Warning: 'rpc' line at index ${index + 1} does not contain Method Name")
       }
     } else {
-      if (line.contains("option (google.api.http) =")) {
+      if (line.contains("option (google.api.http)")) {
         numberOfRestEndpointsFound++
-        val nextLine = index + 1
-        if (nextLine < protoLines.size) {
-          val httpLine = protoLines[nextLine].trim()
-
-          val verb = extractHttpVerb(httpLine)
-          val url = extractUrl(httpLine)
-
-          if (method != null && verb != null && url != null) {
-            val endpointInfo = EndpointInfo(method, url, verb)
-            endpointInfos.add(endpointInfo)
-          } else {
-            println("Failed to extract endpoint at line ${nextLine + 1}")
-          }
+        // Check if the HTTP details are on the same line
+        if (line.contains("put:") || line.contains("get:") || line.contains("post:") || line.contains("delete:")) {
+          processHttpLine(line, method, endpointInfos)
         } else {
-          println("Warning: No line following the HTTP option line at index ${index + 1}")
+          // Check the next line for HTTP details
+          val nextLine = index + 1
+          if (nextLine < protoLines.size) {
+            processHttpLine(protoLines[nextLine].trim(), method, endpointInfos)
+          }
         }
       }
     }
   }
   println("  Found $numberOfRestEndpointsFound REST endpoints in proto file")
   return endpointInfos
+}
+
+private fun processHttpLine(httpLine: String, method: String?, endpointInfos: MutableList<EndpointInfo>) {
+  val verb = extractHttpVerb(httpLine)
+  val url = extractUrl(httpLine)
+
+  if (method != null && verb != null && url != null) {
+    val endpointInfo = EndpointInfo(method, url, verb)
+    endpointInfos.add(endpointInfo)
+  }
 }
 
 fun extractHttpVerb(line: String): String? {
