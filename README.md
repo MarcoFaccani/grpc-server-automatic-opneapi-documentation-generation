@@ -35,30 +35,14 @@ The project contains a folder named `scripts`. Inside, we can find four scripts:
    Swagger2 to OpenAPI3
 3. `extract_endpoint_info_from_proto.kts`: a kotlin script that, given a proto file, generates a `.txt` file that
    contains `rpc method name`, `URL`, `http verb` for each gRPC endpoint. <br>
-   This script has two <span style="color:red">constraints</span>: the google `option` to define the REST endpoint *
-   *MUST** be defined as follows (multi-line):
-
-```
-option (google.api.http) = {
-  post: "/service/greeting",
-  body: "*"
-};
-```
-
-The following (single line) is NOT valid and will result in an error:
-
-```
-option (google.api.http) = { post: "/service/greeting", body: "*" };
-```
-
-The second constraint regards spacing between the name of the RPC method and the request body.
-In fact, between these, there MUST be a space to separate the two. Hence, the following is not valid:
+   This script has one <span style="color:red">constraints</span>, which regards spacing between the name of the RPC method and the request body. 
+   In fact, between these, there MUST be a space to separate the two. Hence, the following is not valid:
 
 ```
 Greeting(GreetingRequest)
 ```
 
-> I am quite confident these two constraint can be easily fixed in future improvements of these scripts
+> I am quite confident this constraint can be easily fixed in future improvements of these scripts
 
 4. `add_examples_to_openapi.sh`: a bash script that reads from the file previously generated at step#3 and for each
    line (each endpoint), automatically adds the request and responses to the OpenAPI3 file. The requests and responses
